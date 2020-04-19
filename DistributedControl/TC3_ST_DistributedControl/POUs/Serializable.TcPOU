@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="Serializable" Id="{bf08be08-f416-4660-a172-8d54c48fb818}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
+FUNCTION_BLOCK Serializable
+VAR_INPUT
+	pSubclassPointer : POINTER TO BYTE;
+	nObjectSize : UDINT;
+END_VAR
+VAR_OUTPUT
+	nWrittenBytes : UDINT;
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Desirialize" Id="{30347d4a-649e-49b4-b8f8-f206c96a3145}">
+      <Declaration><![CDATA[METHOD Desirialize : POINTER TO BYTE;
+VAR_INPUT
+	 pSerialObject : POINTER TO BYTE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[MEMCPY(pSubclassPointer,pSerialObject,nObjectSize);
+Desirialize := pSerialObject;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Serialize" Id="{756b9a90-8f53-46bd-9d89-e8e40b346001}">
+      <Declaration><![CDATA[METHOD Serialize : POINTER TO BYTE;
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Serialize := __NEW(BYTE,nObjectSize);
+nWrittenBytes := MEMCPY(Serialize,pSubclassPointer ,nObjectSize);
+
+	
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Serializable">
+      <LineId Id="27" Count="0" />
+    </LineIds>
+    <LineIds Name="Serializable.Desirialize">
+      <LineId Id="5" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="Serializable.Serialize">
+      <LineId Id="12" Count="0" />
+      <LineId Id="9" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

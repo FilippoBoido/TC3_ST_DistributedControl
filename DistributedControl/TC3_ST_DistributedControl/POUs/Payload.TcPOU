@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="Payload" Id="{01decef4-4932-45b1-b8fd-b868843e0df2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Payload EXTENDS Serializable
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	k : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^(pSubclassPointer := this,nObjectSize := SIZEOF(THIS^));]]></ST>
+    </Implementation>
+    <LineIds Name="Payload">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
