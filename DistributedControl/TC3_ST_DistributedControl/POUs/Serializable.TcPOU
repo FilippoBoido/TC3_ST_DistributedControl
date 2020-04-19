@@ -15,15 +15,15 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="Desirialize" Id="{30347d4a-649e-49b4-b8f8-f206c96a3145}">
-      <Declaration><![CDATA[METHOD Desirialize : POINTER TO BYTE;
+    <Method Name="Deserialize" Id="{30347d4a-649e-49b4-b8f8-f206c96a3145}">
+      <Declaration><![CDATA[METHOD Deserialize : POINTER TO BYTE;
 VAR_INPUT
 	 pSerialObject : POINTER TO BYTE;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[MEMCPY(pSubclassPointer,pSerialObject,nObjectSize);
-Desirialize := pSerialObject;]]></ST>
+Deserialize := pSerialObject;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Serialize" Id="{756b9a90-8f53-46bd-9d89-e8e40b346001}">
@@ -42,7 +42,7 @@ nWrittenBytes := MEMCPY(Serialize,pSubclassPointer ,nObjectSize);
     <LineIds Name="Serializable">
       <LineId Id="27" Count="0" />
     </LineIds>
-    <LineIds Name="Serializable.Desirialize">
+    <LineIds Name="Serializable.Deserialize">
       <LineId Id="5" Count="0" />
       <LineId Id="8" Count="0" />
     </LineIds>

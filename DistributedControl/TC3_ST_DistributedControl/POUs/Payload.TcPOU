@@ -3,18 +3,24 @@
   <POU Name="Payload" Id="{01decef4-4932-45b1-b8fd-b868843e0df2}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Payload EXTENDS Serializable
 VAR_INPUT
+	timer : TON;
 END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
 	k : INT;
+	
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[SUPER^(pSubclassPointer := this,nObjectSize := SIZEOF(THIS^));]]></ST>
+      <ST><![CDATA[SUPER^(pSubclassPointer := THIS,nObjectSize := SIZEOF(THIS^));
+
+timer();]]></ST>
     </Implementation>
     <LineIds Name="Payload">
       <LineId Id="9" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="20" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
