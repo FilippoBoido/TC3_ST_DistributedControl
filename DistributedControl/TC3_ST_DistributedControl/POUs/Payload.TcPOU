@@ -8,8 +8,7 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-	k : INT;
-	
+	k : INT;	
 END_VAR
 ]]></Declaration>
     <Implementation>

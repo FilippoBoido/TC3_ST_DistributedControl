@@ -3,10 +3,15 @@
   <POU Name="Serializable" Id="{bf08be08-f416-4660-a172-8d54c48fb818}" SpecialFunc="None">
     <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
 FUNCTION_BLOCK Serializable
-VAR_INPUT
-	pSubclassPointer : POINTER TO BYTE;
-	nObjectSize : UDINT;
+
+VAR_OUTPUT
+	uiObjectSize : UINT;
 END_VAR
+
+VAR
+	pSerializableObject : POINTER TO BYTE;
+END_VAR
+
 VAR_OUTPUT
 	nWrittenBytes : UDINT;
 END_VAR
@@ -22,22 +27,33 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[MEMCPY(pSubclassPointer,pSerialObject,nObjectSize);
+        <ST><![CDATA[MEMCPY(THIS,pSerialObject,uiObjectSize);
 Deserialize := pSerialObject;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="FB_init" Id="{1fc4ff25-e6cf-46ef-92ba-67d3e3bb9c1a}">
+    <Method Name="FB_exit" Id="{cde14aa9-547e-48fb-9681-29cede09254d}">
+      <Declaration><![CDATA[METHOD FB_exit : BOOL
+VAR_INPUT
+	bInCopyCode : BOOL; // if TRUE, the exit method is called for exiting an instance that is copied afterwards (online change).
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pSerializableObject <> 0
+THEN
+	__DELETE(pSerializableObject);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{e3227886-74bf-45bb-9fee-d60a6102c6f0}">
       <Declaration><![CDATA[METHOD FB_init : BOOL
 VAR_INPUT
 	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
 	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
-	pSubclassPointer : POINTER TO BYTE;
-	nObjectSize : UDINT;
+	uiObjectSize : UINT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[THIS^.pSubclassPointer := pSubclassPointer;
-THIS^.nObjectSize := nObjectSize;]]></ST>
+        <ST><![CDATA[THIS^.uiObjectSize := uiObjectSize;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Serialize" Id="{756b9a90-8f53-46bd-9d89-e8e40b346001}">
@@ -46,8 +62,17 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[Serialize := __NEW(BYTE,nObjectSize);
-nWrittenBytes := MEMCPY(Serialize,pSubclassPointer ,nObjectSize);
+        <ST><![CDATA[IF pSerializableObject = 0
+THEN
+
+	Serialize := __NEW(BYTE,uiObjectSize);
+	nWrittenBytes := MEMCPY(Serialize,THIS,uiObjectSize);
+	pSerializableObject := Serialize;
+	
+ELSE
+	Serialize := pSerializableObject;
+END_IF
+	
 
 	
 ]]></ST>
@@ -60,13 +85,22 @@ nWrittenBytes := MEMCPY(Serialize,pSubclassPointer ,nObjectSize);
       <LineId Id="5" Count="0" />
       <LineId Id="8" Count="0" />
     </LineIds>
+    <LineIds Name="Serializable.FB_exit">
+      <LineId Id="7" Count="1" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
     <LineIds Name="Serializable.FB_init">
-      <LineId Id="8" Count="0" />
       <LineId Id="7" Count="0" />
     </LineIds>
     <LineIds Name="Serializable.Serialize">
+      <LineId Id="17" Count="2" />
       <LineId Id="12" Count="0" />
-      <LineId Id="9" Count="2" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="20" Count="3" />
+      <LineId Id="10" Count="1" />
       <LineId Id="5" Count="0" />
     </LineIds>
   </POU>

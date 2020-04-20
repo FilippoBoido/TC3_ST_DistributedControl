@@ -3,10 +3,10 @@
   <POU Name="MAIN" Id="{a428ac16-d16d-414b-aa2c-821dfdc90fce}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
-	fbPayload_1 : Payload(pSubclassPointer := ADR(fbPayload_1),nObjectSize:=SIZEOF(fbPayload_1));
-	fbPayload_2 : Payload(pSubclassPointer := ADR(fbPayload_2),nObjectSize:=SIZEOF(fbPayload_2));
+	fbPayload_1 : Payload(uiObjectSize := SIZEOF(Payload));
+	fbPayload_2 : Payload(uiObjectSize := SIZEOF(Payload));
 	
-	bStart,bStart2,bStart3 : BOOL;
+	bStart,bStart2,bStart3,bStart4 : BOOL;
 	Size1,Size2,Size3,Size4 : UINT;
 	
 	pBuffer : POINTER TO BYTE;
@@ -15,7 +15,8 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[fbPayload_1();
+      <ST><![CDATA[
+fbPayload_1();
 fbPayload_2();
 fbPayload_1.timer.PT := T#45S;
 fbPayload_1.timer.IN := TRUE;
@@ -24,7 +25,6 @@ IF 	bStart
 	THEN
 		
 	pBuffer := fbPayload_2.Deserialize(fbPayload_1.Serialize());
-	__DELETE(pBuffer);
 	bStart := FALSE;
 	
 END_IF
@@ -32,9 +32,8 @@ END_IF
 IF	bStart2
 	THEN
 	
-	pBuffer := fbPayload_1.Serialize();
-	MEMCPY(ADR(aMarshalBuffer),pBuffer,fbPayload_1.nObjectSize);
-	__DELETE(pBuffer);
+	
+	MEMCPY(ADR(aMarshalBuffer),fbPayload_1.Serialize(),fbPayload_1.uiObjectSize);
 	bStart2 := FALSE;
 	
 END_IF
@@ -43,12 +42,21 @@ IF	bStart3
 	THEN
 	
 	fbPayload_2.Deserialize(ADR(aMarshalBuffer));
-	//MEMCPY(ADR(fbPayload_2),ADR(aMarshalBuffer),fbPayload_2.nObjectSize);
 	bStart3 := FALSE;
+	
+END_IF
+
+IF	bStart4
+	THEN
+	
+	
+	MEMCPY(ADR(aMarshalBuffer),fbPayload_2.Serialize(),fbPayload_2.uiObjectSize);
+	bStart2 := FALSE;
 	
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
+      <LineId Id="83" Count="0" />
       <LineId Id="21" Count="1" />
       <LineId Id="56" Count="0" />
       <LineId Id="55" Count="0" />
@@ -56,7 +64,6 @@ END_IF]]></ST>
       <LineId Id="2" Count="0" />
       <LineId Id="9" Count="0" />
       <LineId Id="11" Count="1" />
-      <LineId Id="43" Count="0" />
       <LineId Id="14" Count="0" />
       <LineId Id="23" Count="0" />
       <LineId Id="10" Count="0" />
@@ -64,18 +71,19 @@ END_IF]]></ST>
       <LineId Id="24" Count="0" />
       <LineId Id="26" Count="0" />
       <LineId Id="29" Count="1" />
-      <LineId Id="32" Count="0" />
-      <LineId Id="35" Count="0" />
-      <LineId Id="33" Count="0" />
+      <LineId Id="32" Count="1" />
       <LineId Id="73" Count="0" />
       <LineId Id="27" Count="0" />
       <LineId Id="37" Count="0" />
       <LineId Id="36" Count="0" />
       <LineId Id="38" Count="0" />
       <LineId Id="58" Count="0" />
-      <LineId Id="40" Count="2" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="42" Count="0" />
       <LineId Id="72" Count="0" />
       <LineId Id="39" Count="0" />
+      <LineId Id="75" Count="7" />
+      <LineId Id="74" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
