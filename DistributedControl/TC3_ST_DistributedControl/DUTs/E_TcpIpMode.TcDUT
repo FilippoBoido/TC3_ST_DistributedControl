@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <DUT Name="E_TcpIpMode" Id="{07657710-bd39-43b3-92b1-d28d8fe1c26c}">
+    <Declaration><![CDATA[TYPE E_TcpIpMode :
+(
+	TCP_IP_NO_MODE := 0,
+	TCP_IP_SERVER,
+	TCP_IP_CLIENT
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

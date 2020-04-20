@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <DUT Name="ST_ClientData" Id="{46264848-fff1-4e67-a049-73cdd628d3fe}">
+    <Declaration><![CDATA[TYPE ST_ClientData :
+STRUCT
+	sSrvNetID   : T_AmsNetID := '';
+    nMode       : DWORD := 0;
+    sRemoteHost : T_IPv4Addr := '';
+    nRemotePort : UDINT;
+    tReconnect  : TIME := T#45S;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -3,15 +3,37 @@
   <POU Name="MAIN" Id="{a428ac16-d16d-414b-aa2c-821dfdc90fce}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
+
 	fbPayload_1 : Payload(uiObjectSize := SIZEOF(Payload));
 	fbPayload_2 : Payload(uiObjectSize := SIZEOF(Payload));
 	
-	bStart,bStart2,bStart3,bStart4 : BOOL;
-	Size1,Size2,Size3,Size4 : UINT;
+	bStart,
+	bStart2,
+	bStart3,
+	bStart4,
+	bStart5,
+	bStart6 : BOOL;
 	
+	Size1,
+	Size2,
+	Size3,
+	Size4 : UINT;
 	pBuffer : POINTER TO BYTE;
+	pServerBuffer : POINTER TO BYTE;
+	pClientBuffer : POINTER TO BYTE;
 	aMarshalBuffer : ARRAY[0..1999] OF BYTE;
-	
+	aServerMarshalBuffer : ARRAY[0..1999] OF BYTE;
+	aClientMarshalBuffer : ARRAY[0..1999] OF BYTE;
+	aServerBuffer : ARRAY[0..1999] OF BYTE;
+	aClientBuffer : ARRAY[0..1999] OF BYTE;
+	fbServer : TcpIp(TCP_IP_SERVER);
+	fbClient : TcpIp(TCP_IP_CLIENT);
+	serverStep : UINT;
+	clientStep : UINT;
+	udiServerTimeToSend : UDINT;
+	udiServerTimeToReceive : UDINT;
+	udiServerTimeToSendTmp : UDINT;
+	udiServerTimeToReceiveTmp : UDINT;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -20,6 +42,12 @@ fbPayload_1();
 fbPayload_2();
 fbPayload_1.timer.PT := T#45S;
 fbPayload_1.timer.IN := TRUE;
+
+fbServer.stServerData.nLocalPort := 200;
+fbServer(bEnable := TRUE);
+
+fbClient.stClientData.nRemotePort := 200;
+fbClient(bEnable := TRUE);
 
 IF 	bStart
 	THEN
@@ -31,7 +59,6 @@ END_IF
 
 IF	bStart2
 	THEN
-	
 	
 	MEMCPY(ADR(aMarshalBuffer),fbPayload_1.Serialize(),fbPayload_1.uiObjectSize);
 	bStart2 := FALSE;
@@ -49,10 +76,69 @@ END_IF
 IF	bStart4
 	THEN
 	
-	
 	MEMCPY(ADR(aMarshalBuffer),fbPayload_2.Serialize(),fbPayload_2.uiObjectSize);
 	bStart2 := FALSE;
 	
+END_IF
+
+IF	bStart5
+	THEN
+	
+	CASE serverStep OF
+	
+		0 :
+			MEMCPY(ADR(aServerMarshalBuffer),fbPayload_1.Serialize(),fbPayload_1.uiObjectSize);
+			serverStep := 10;
+			
+		10:
+		
+			udiServerTimeToSendTmp := udiServerTimeToSendTmp + 1;
+ 			IF 	fbServer.SendSerializedObject(pSrc := ADR(aServerMarshalBuffer), cbLen := fbPayload_1.uiObjectSize)
+				THEN
+				
+				udiServerTimeToSend := udiServerTimeToSendTmp;
+				udiServerTimeToSendTmp := 0;
+				serverStep := 20;
+				
+			END_IF
+			
+		20: 
+		
+			udiServerTimeToReceiveTmp := udiServerTimeToReceiveTmp + 1;
+			IF 	fbServer.ReceiveSerializedObject(pDest := ADR(aServerBuffer),cbLen := fbPayload_1.uiObjectSize)
+				THEN
+				
+				udiServerTimeToReceive := udiServerTimeToReceiveTmp;
+				udiServerTimeToReceiveTmp := 0;
+				
+				fbPayload_1.Deserialize(ADR(aServerBuffer));
+				serverStep := 0;
+			END_IF
+		
+	END_CASE
+
+	CASE clientStep OF
+	
+		0 :
+ 			IF 	fbClient.ReceiveSerializedObject(pDest := ADR(aClientBuffer),cbLen := fbPayload_2.uiObjectSize)
+				THEN
+				
+				fbPayload_2.Deserialize(ADR(aClientBuffer));
+				MEMCPY(ADR(aClientMarshalBuffer),fbPayload_2.Serialize(),fbPayload_2.uiObjectSize);
+				
+				clientStep := 10;
+				
+			END_IF
+			
+		10: 
+			IF 	fbClient.SendSerializedObject(pSrc := ADR(aClientMarshalBuffer), cbLen := fbPayload_2.uiObjectSize)
+				THEN
+				
+				clientStep := 0;
+			END_IF
+		
+	END_CASE
+
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
@@ -60,7 +146,12 @@ END_IF]]></ST>
       <LineId Id="21" Count="1" />
       <LineId Id="56" Count="0" />
       <LineId Id="55" Count="0" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="107" Count="0" />
       <LineId Id="57" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="88" Count="1" />
       <LineId Id="2" Count="0" />
       <LineId Id="9" Count="0" />
       <LineId Id="11" Count="1" />
@@ -70,7 +161,7 @@ END_IF]]></ST>
       <LineId Id="25" Count="0" />
       <LineId Id="24" Count="0" />
       <LineId Id="26" Count="0" />
-      <LineId Id="29" Count="1" />
+      <LineId Id="29" Count="0" />
       <LineId Id="32" Count="1" />
       <LineId Id="73" Count="0" />
       <LineId Id="27" Count="0" />
@@ -82,8 +173,46 @@ END_IF]]></ST>
       <LineId Id="42" Count="0" />
       <LineId Id="72" Count="0" />
       <LineId Id="39" Count="0" />
-      <LineId Id="75" Count="7" />
+      <LineId Id="75" Count="3" />
+      <LineId Id="80" Count="2" />
       <LineId Id="74" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="103" Count="2" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="172" Count="3" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="119" Count="2" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="163" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="165" Count="1" />
+      <LineId Id="127" Count="2" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="135" Count="5" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="141" Count="7" />
+      <LineId Id="150" Count="1" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="116" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

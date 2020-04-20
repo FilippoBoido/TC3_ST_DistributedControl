@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="TcpIp" Id="{326bedf4-567c-4c8e-8600-6115e82aa01f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TcpIp
+VAR_INPUT
+	
+	bEnable : BOOL;
+	stServerData : ST_ServerData;
+	stClientData : ST_ClientData;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+
+	fbClientServerConnection : FB_ClientServerConnection;
+	fbServerClientConnection : FB_ServerClientConnection;
+	fbSocketSend : FB_SocketSend;
+	fbSocketReceive : FB_SocketReceive;
+	
+	stepSendRoutine : UINT;
+	stepReceiveRoutine : UINT;
+	eMode : E_TcpIpMode;
+	hSocket : T_HSOCKET;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fbSocketSend(
+	sSrvNetId:= , 
+	hSocket:= hSocket, 
+	cbLen:= , 
+	pSrc:= , 
+	bExecute:= , 
+	tTimeout:= , 
+	bBusy=> , 
+	bError=> , 
+	nErrId=> );
+	
+fbSocketReceive(
+	sSrvNetId:= , 
+	hSocket:= hSocket, 
+	cbLen:= , 
+	pDest:= , 
+	bExecute:= , 
+	tTimeout:= , 
+	bBusy=> , 
+	bError=> , 
+	nErrId=> , 
+	nRecBytes=> );
+
+CASE eMode OF
+
+	TCP_IP_SERVER:
+		F_CreateServerHnd(
+			sSrvNetID := stServerData.sSrvNetID,
+			bEnable := bEnable,
+			sLocalHost := stServerData.sLocalHost,
+			nLocalPort := stServerData.nLocalPort,
+			nMode := stServerData.nMode,
+			hServer := stServerData.hServer
+		);
+			
+		fbServerClientConnection(
+			hServer:= stServerData.hServer,
+			eMode:= , 
+			sRemoteHost:= , 
+			nRemotePort:= , 
+			bEnable:= bEnable, 
+			tReconnect:= , 
+			bBusy=> , 
+			bError=> , 
+			nErrID=> , 
+			hSocket=> , 
+			eState=> );
+			
+		hSocket := fbServerClientConnection.hSocket;	
+		
+	TCP_IP_CLIENT:
+	
+		fbClientServerConnection(
+			sSrvNetID:= stClientData.sSrvNetID, 
+			nMode:= stClientData.nMode, 
+			sRemoteHost:= stClientData.sRemoteHost, 
+			nRemotePort:= stClientData.nRemotePort, 
+			bEnable:= bEnable, 
+			tReconnect:= stClientData.tReconnect, 
+			bBusy=> , 
+			bError=> , 
+			nErrId=> , 
+			hSocket=> , 
+			eState=> );
+			
+		hSocket := fbClientServerConnection.hSocket;		
+		
+END_CASE]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{f48f49c3-fcc6-44bb-b969-21bcdbad80b9}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	eMode : E_TcpIpMode;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.eMode := eMode;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReceiveSerializedObject" Id="{e008cc05-7d40-4df9-81df-2d00e6b0a968}">
+      <Declaration><![CDATA[METHOD ReceiveSerializedObject : BOOL
+VAR_INPUT
+	cbLen      : UDINT;
+   	pDest      : POINTER TO BYTE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF	fbClientServerConnection.eState = eSOCKET_CONNECTED
+	OR fbServerClientConnection.eState = eSOCKET_CONNECTED
+THEN
+	CASE stepReceiveRoutine OF
+	
+		0: 
+			fbSocketReceive.pDest := pDest;
+			fbSocketReceive.cbLen := cbLen;
+			fbSocketReceive.bExecute := TRUE;
+			stepReceiveRoutine := 10;
+			
+		10:
+		
+			IF 	NOT fbSocketReceive.bBusy
+				AND NOT fbSocketReceive.bError
+				AND fbSocketReceive.nRecBytes > 0
+				THEN
+				
+				fbSocketReceive.bExecute := FALSE;
+				ReceiveSerializedObject := TRUE;
+				stepReceiveRoutine := 0;
+				
+			END_IF
+			
+	END_CASE
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SendSerializedObject" Id="{8addfef6-b092-4f41-93ac-2b22dda4f562}">
+      <Declaration><![CDATA[METHOD SendSerializedObject : BOOL
+VAR_INPUT
+	cbLen      : UDINT;
+    pSrc       : POINTER TO BYTE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF 	fbClientServerConnection.eState = eSOCKET_CONNECTED
+	OR fbServerClientConnection.eState = eSOCKET_CONNECTED
+THEN
+	CASE stepSendRoutine OF
+	
+		0: 
+		
+			fbSocketSend.pSrc := pSrc;
+			fbSocketSend.cbLen := cbLen;
+			fbSocketSend.bExecute := TRUE;
+			stepSendRoutine := 10;
+			
+		10:
+		
+			IF 	NOT fbSocketSend.bBusy
+				AND NOT fbSocketSend.bError
+				
+				THEN
+				
+				fbSocketSend.bExecute := FALSE;
+				SendSerializedObject := TRUE;
+				stepSendRoutine := 0;
+				
+			END_IF
+			
+	END_CASE
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="TcpIp">
+      <LineId Id="97" Count="0" />
+      <LineId Id="73" Count="8" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="84" Count="9" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="53" Count="5" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="23" Count="10" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="38" Count="10" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="20" Count="0" />
+    </LineIds>
+    <LineIds Name="TcpIp.FB_init">
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="TcpIp.ReceiveSerializedObject">
+      <LineId Id="6" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="7" Count="3" />
+      <LineId Id="12" Count="8" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="21" Count="1" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="23" Count="5" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="TcpIp.SendSerializedObject">
+      <LineId Id="6" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="10" Count="12" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="26" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

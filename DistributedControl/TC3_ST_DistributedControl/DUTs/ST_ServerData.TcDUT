@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <DUT Name="ST_ServerData" Id="{1c28ec9c-b0ff-48b6-9d85-a0294630dcf8}">
+    <Declaration><![CDATA[TYPE ST_ServerData :
+STRUCT
+	hServer         : T_HSERVER; 
+    sSrvNetID       : T_AmsNetID := ''; 
+    sLocalHost      : STRING(15) := ''; 
+    nLocalPort      : UDINT := 0;
+	
+    nMode           : DWORD := LISTEN_MODE_CLOSEALL (* OR CONNECT_MODE_ENABLEDBG*);
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

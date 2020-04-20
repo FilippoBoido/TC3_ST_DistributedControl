@@ -6,14 +6,11 @@ FUNCTION_BLOCK Serializable
 
 VAR_OUTPUT
 	uiObjectSize : UINT;
+	nWrittenBytes : UDINT;
 END_VAR
 
 VAR
 	pSerializableObject : POINTER TO BYTE;
-END_VAR
-
-VAR_OUTPUT
-	nWrittenBytes : UDINT;
 END_VAR
 
 ]]></Declaration>
