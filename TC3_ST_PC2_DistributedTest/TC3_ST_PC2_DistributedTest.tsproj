@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.4">
+	<Project ProjectGUID="{11B16A4B-AB7E-491F-98E7-8E9B384BBCA1}" TargetNetId="192.168.2.113.1.1" Target64Bit="true" ShowHideConfigurations="#x106">
+		<System>
+			<Settings MaxCpus="2" NonWinCpus="1">
+				<Cpu CpuId="1"/>
+			</Settings>
+			<Tasks>
+				<Task Id="2" Priority="22" CycleTime="100000" AmsPort="350" AdtTasks="true">
+					<Name>PlcTask</Name>
+				</Task>
+			</Tasks>
+		</System>
+		<Plc>
+			<Project GUID="{228FF323-DF3C-44DD-9712-A4EC4CE9FD2F}" Name="TC3_ST_PC2_DistributedTest" PrjFilePath="TC3_ST_PC2_DistributedTest\TC3_ST_PC2_DistributedTest.plcproj" TmcFilePath="TC3_ST_PC2_DistributedTest\TC3_ST_PC2_DistributedTest.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="TC3_ST_PC2_DistributedTest\TC3_ST_PC2_DistributedTest.tmc">
+					<Name>TC3_ST_PC2_DistributedTest Instance</Name>
+					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<TaskPouOids>
+						<TaskPouOid Prio="22" OTCID="#x08502001"/>
+					</TaskPouOids>
+				</Instance>
+			</Project>
+		</Plc>
+	</Project>
+</TcSmProject>

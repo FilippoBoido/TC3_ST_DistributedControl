@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="MAIN" Id="{4cf0dbfd-54e4-4ff5-9aa3-a99c0b938ffd}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	
+	fbPayloadServer : Payload(uiObjectSize := SIZEOF(Payload));
+	bStart : BOOL;
+	
+	pBuffer : POINTER TO BYTE;
+	pServerBuffer : POINTER TO BYTE;
+	
+	aServerMarshalBuffer : ARRAY[0..1999] OF BYTE;
+	aServerUnmarshalBuffer : ARRAY[0..1999] OF BYTE;
+	
+	fbServer : TcpIp(TCP_IP_SERVER);
+	
+	serverStep : UINT;
+	
+	udiServerTimeToSend : UDINT;
+	udiServerTimeToReceive : UDINT;
+	udiServerTimeToSendTmp : UDINT;
+	udiServerTimeToReceiveTmp : UDINT;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbPayloadServer();
+
+fbPayloadServer.timer.PT := T#45S;
+fbPayloadServer.timer.IN := TRUE;
+
+fbServer.stServerData.nLocalPort := 200;
+fbServer(bEnable := TRUE);
+
+IF 	bStart
+	THEN
+	
+	CASE serverStep OF
+	
+		0 :
+			MEMCPY(ADR(aServerMarshalBuffer),fbPayloadServer.Serialize(),fbPayloadServer.uiObjectSize);
+			serverStep := 10;
+			
+		10:
+		
+			udiServerTimeToSendTmp := udiServerTimeToSendTmp + 1;
+			IF 	fbServer.SendSerializedObject(pSrc := ADR(aServerMarshalBuffer), cbLen := fbPayloadServer.uiObjectSize)
+				THEN
+				
+				udiServerTimeToSend := udiServerTimeToSendTmp;
+				udiServerTimeToSendTmp := 0;
+				serverStep := 20;
+				
+			END_IF
+			
+		20: 
+		
+			udiServerTimeToReceiveTmp := udiServerTimeToReceiveTmp + 1;
+			IF 	fbServer.ReceiveSerializedObject(pDest := ADR(aServerUnmarshalBuffer),cbLen := fbPayloadServer.uiObjectSize)
+				THEN
+				
+				udiServerTimeToReceive := udiServerTimeToReceiveTmp;
+				udiServerTimeToReceiveTmp := 0;
+				
+				fbPayloadServer.Deserialize(ADR(aServerUnmarshalBuffer));
+				serverStep := 0;
+			END_IF
+			
+		END_CASE
+	
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="98" Count="6" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="44" Count="30" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

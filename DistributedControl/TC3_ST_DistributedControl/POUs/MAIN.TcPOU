@@ -80,7 +80,7 @@ IF	bStart4
 	bStart2 := FALSE;
 	
 END_IF
-
+(*
 IF	bStart5
 	THEN
 	
@@ -139,7 +139,8 @@ IF	bStart5
 		
 	END_CASE
 
-END_IF]]></ST>
+END_IF
+*)]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
       <LineId Id="83" Count="0" />
@@ -213,6 +214,7 @@ END_IF]]></ST>
       <LineId Id="115" Count="0" />
       <LineId Id="157" Count="0" />
       <LineId Id="116" Count="0" />
+      <LineId Id="216" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="MAIN" Id="{1bfe06d5-657b-48bf-a10c-373c744c63bc}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+		
+	bStart : BOOL;
+	fbPayloadClient : Payload(uiObjectSize := SIZEOF(Payload));
+	aClientMarshalBuffer : ARRAY[0..1999] OF BYTE;
+	aClientUnmarshalBuffer : ARRAY[0..1999] OF BYTE;
+	fbClient : TcpIp(TCP_IP_CLIENT);
+	clientStep : UINT;
+	udiClientTimeToSend : UDINT;
+	udiClientTimeToReceive : UDINT;
+	udiClientTimeToSendTmp : UDINT;
+	udiClientTimeToReceiveTmp : UDINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fbPayloadClient();
+
+fbClient.stClientData.nRemotePort := 200;
+fbClient.stClientData.sRemoteHost := '192.168.2.115';
+fbClient(bEnable := TRUE);
+
+IF 	bStart
+	THEN
+	
+	
+	CASE clientStep OF
+	
+		0 :
+ 			IF 	fbClient.ReceiveSerializedObject(pDest := ADR(aClientUnmarshalBuffer),cbLen := fbPayloadClient.uiObjectSize)
+				THEN
+				
+				fbPayloadClient.Deserialize(ADR(aClientUnmarshalBuffer));
+				MEMCPY(ADR(aClientMarshalBuffer),fbPayloadClient.Serialize(),fbPayloadClient.uiObjectSize);
+				
+				clientStep := 10;
+				
+			END_IF
+			
+		10: 
+			IF 	fbClient.SendSerializedObject(pSrc := ADR(aClientMarshalBuffer), cbLen := fbPayloadClient.uiObjectSize)
+				THEN
+				
+				clientStep := 0;
+			END_IF
+		
+	END_CASE
+
+
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="67" Count="1" />
+      <LineId Id="75" Count="2" />
+      <LineId Id="65" Count="1" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="28" Count="22" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="25" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
