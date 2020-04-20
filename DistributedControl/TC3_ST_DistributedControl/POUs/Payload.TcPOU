@@ -13,13 +13,9 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[SUPER^(pSubclassPointer := THIS,nObjectSize := SIZEOF(THIS^));
-
-timer();]]></ST>
+      <ST><![CDATA[timer();]]></ST>
     </Implementation>
     <LineIds Name="Payload">
-      <LineId Id="9" Count="0" />
-      <LineId Id="21" Count="0" />
       <LineId Id="20" Count="0" />
     </LineIds>
   </POU>

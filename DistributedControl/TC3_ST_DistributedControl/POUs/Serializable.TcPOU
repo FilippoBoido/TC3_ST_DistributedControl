@@ -26,6 +26,20 @@ END_VAR
 Deserialize := pSerialObject;]]></ST>
       </Implementation>
     </Method>
+    <Method Name="FB_init" Id="{1fc4ff25-e6cf-46ef-92ba-67d3e3bb9c1a}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	pSubclassPointer : POINTER TO BYTE;
+	nObjectSize : UDINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.pSubclassPointer := pSubclassPointer;
+THIS^.nObjectSize := nObjectSize;]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="Serialize" Id="{756b9a90-8f53-46bd-9d89-e8e40b346001}">
       <Declaration><![CDATA[METHOD Serialize : POINTER TO BYTE;
 VAR_INPUT
@@ -45,6 +59,10 @@ nWrittenBytes := MEMCPY(Serialize,pSubclassPointer ,nObjectSize);
     <LineIds Name="Serializable.Deserialize">
       <LineId Id="5" Count="0" />
       <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="Serializable.FB_init">
+      <LineId Id="8" Count="0" />
+      <LineId Id="7" Count="0" />
     </LineIds>
     <LineIds Name="Serializable.Serialize">
       <LineId Id="12" Count="0" />
