@@ -7,16 +7,14 @@ VAR_INPUT
 	k : INT;
 	j : INT;
 END_VAR
-VAR_OUTPUT
-	mySize : UINT;
-END_VAR
+
 VAR
 		
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[timer();
-mySize := SIZEOF(THIS^);]]></ST>
+]]></ST>
     </Implementation>
     <LineIds Name="Payload">
       <LineId Id="20" Count="0" />

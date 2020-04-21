@@ -56,7 +56,9 @@ Size1 := SIZEOF(PAYLOAD);
 Size2 := SIZEOF(SERIALIZABLE);
 Size3 := SIZEOF(TCPIP);
 Size4 := SIZEOF(fbTest);
+
 varInfo := __VARINFO(fbPayload_1);
+
 fbPayload_1();
 fbPayload_2();
 fbPayload_1.timer.PT := T#45S;
@@ -176,7 +178,9 @@ END_IF
       <LineId Id="316" Count="0" />
       <LineId Id="263" Count="2" />
       <LineId Id="270" Count="0" />
+      <LineId Id="317" Count="0" />
       <LineId Id="266" Count="0" />
+      <LineId Id="318" Count="0" />
       <LineId Id="21" Count="1" />
       <LineId Id="56" Count="0" />
       <LineId Id="55" Count="0" />
