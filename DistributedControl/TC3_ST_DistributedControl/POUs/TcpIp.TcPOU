@@ -22,6 +22,7 @@ VAR
 	stepReceiveRoutine : UINT;
 	eMode : E_TcpIpMode;
 	hSocket : T_HSOCKET;
+	bResetConnection : BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -74,6 +75,24 @@ CASE eMode OF
 			hSocket=> , 
 			eState=> );
 			
+		IF 	fbServerClientConnection.eState = eSOCKET_DISCONNECTED 
+			THEN
+			
+			fbServerClientConnection(
+			hServer:= stServerData.hServer,
+			eMode:= , 
+			sRemoteHost:= , 
+			nRemotePort:= , 
+			bEnable:= FALSE, 
+			tReconnect:= , 
+			bBusy=> , 
+			bError=> , 
+			nErrID=> , 
+			hSocket=> , 
+			eState=> );
+			
+		END_IF
+		
 		hSocket := fbServerClientConnection.hSocket;	
 		
 	TCP_IP_CLIENT:
@@ -91,6 +110,24 @@ CASE eMode OF
 			hSocket=> , 
 			eState=> );
 			
+		IF 	bResetConnection
+			THEN
+			
+			bResetConnection := FALSE;
+			fbClientServerConnection(
+				sSrvNetID:= stClientData.sSrvNetID, 
+				nMode:= stClientData.nMode, 
+				sRemoteHost:= stClientData.sRemoteHost, 
+				nRemotePort:= stClientData.nRemotePort, 
+				bEnable:= FALSE, 
+				tReconnect:= stClientData.tReconnect, 
+				bBusy=> , 
+				bError=> , 
+				nErrId=> , 
+				hSocket=> , 
+				eState=> );
+		END_IF
+		
 		hSocket := fbClientServerConnection.hSocket;		
 		
 END_CASE]]></ST>
@@ -130,13 +167,27 @@ THEN
 		
 			IF 	NOT fbSocketReceive.bBusy
 				AND NOT fbSocketReceive.bError
-				AND fbSocketReceive.nRecBytes > 0
+				AND fbSocketReceive.nRecBytes = cbLen
 				THEN
 				
 				fbSocketReceive.bExecute := FALSE;
 				ReceiveSerializedObject := TRUE;
 				stepReceiveRoutine := 0;
 				
+			ELSIF 	NOT fbSocketReceive.bBusy
+					AND NOT fbSocketReceive.bError
+					AND fbSocketReceive.nRecBytes = 0
+					THEN
+					
+					fbSocketReceive.bExecute := FALSE;
+					stepReceiveRoutine := 0;
+					
+			ELSIF	fbSocketReceive.bError
+					THEN
+		
+					bResetConnection := TRUE;
+					fbSocketReceive.bExecute := FALSE;
+					stepReceiveRoutine := 0;			
 			END_IF
 			
 	END_CASE
@@ -197,14 +248,30 @@ END_IF]]></ST>
       <LineId Id="52" Count="0" />
       <LineId Id="23" Count="10" />
       <LineId Id="22" Count="0" />
+      <LineId Id="126" Count="0" />
       <LineId Id="98" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="129" Count="10" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="141" Count="0" />
       <LineId Id="35" Count="0" />
       <LineId Id="99" Count="0" />
       <LineId Id="18" Count="0" />
       <LineId Id="36" Count="0" />
       <LineId Id="38" Count="10" />
       <LineId Id="37" Count="0" />
+      <LineId Id="146" Count="0" />
       <LineId Id="100" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="149" Count="10" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="160" Count="0" />
       <LineId Id="63" Count="0" />
       <LineId Id="101" Count="0" />
       <LineId Id="20" Count="0" />
@@ -220,7 +287,18 @@ END_IF]]></ST>
       <LineId Id="33" Count="0" />
       <LineId Id="21" Count="1" />
       <LineId Id="32" Count="0" />
-      <LineId Id="23" Count="5" />
+      <LineId Id="23" Count="1" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="41" Count="3" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="53" Count="1" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="55" Count="1" />
+      <LineId Id="26" Count="2" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="TcpIp.SendSerializedObject">

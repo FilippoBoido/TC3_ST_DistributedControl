@@ -4,9 +4,11 @@
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
 
-	fbPayload_1 : Payload(uiObjectSize := SIZEOF(Payload));
+	fbPayload_1 : Payload(uiObjectSize := SIZEOF(fbPayload_1));
 	fbPayload_2 : Payload(uiObjectSize := SIZEOF(Payload));
 	
+	fbTest : Test;
+	varInfo : __SYSTEM.VAR_INFO;
 	bStart,
 	bStart2,
 	bStart3,
@@ -34,10 +36,26 @@ VAR
 	udiServerTimeToReceive : UDINT;
 	udiServerTimeToSendTmp : UDINT;
 	udiServerTimeToReceiveTmp : UDINT;
+	bInit : BOOL;
+	counterServer : INT;
+	counterClient : INT;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[IF 	NOT bInit
+	THEN
+	
+	bInit := TRUE;
+	//fbPayload_1.Serialize();
+	//fbPayload_2.Serialize();
+	
+	
+END_IF
+Size1 := SIZEOF(PAYLOAD);
+Size2 := SIZEOF(SERIALIZABLE);
+Size3 := SIZEOF(TCPIP);
+Size4 := SIZEOF(fbTest);
+varInfo := __VARINFO(fbPayload_1);
 fbPayload_1();
 fbPayload_2();
 fbPayload_1.timer.PT := T#45S;
@@ -80,13 +98,16 @@ IF	bStart4
 	bStart2 := FALSE;
 	
 END_IF
-(*
+
 IF	bStart5
 	THEN
 	
 	CASE serverStep OF
 	
 		0 :
+			fbPayload_1.j := counterServer;
+			counterServer := counterServer + 1;
+			
 			MEMCPY(ADR(aServerMarshalBuffer),fbPayload_1.Serialize(),fbPayload_1.uiObjectSize);
 			serverStep := 10;
 			
@@ -124,12 +145,14 @@ IF	bStart5
 				THEN
 				
 				fbPayload_2.Deserialize(ADR(aClientBuffer));
-				MEMCPY(ADR(aClientMarshalBuffer),fbPayload_2.Serialize(),fbPayload_2.uiObjectSize);
+				fbPayload_2.k := counterClient;
+				counterClient := counterClient + 1;
+				MEMCPY(ADR(aClientMarshalBuffer),fbPayload_2.Serialize(),fbPayload_2.uiObjectSize); 
 				
 				clientStep := 10;
 				
 			END_IF
-			
+	
 		10: 
 			IF 	fbClient.SendSerializedObject(pSrc := ADR(aClientMarshalBuffer), cbLen := fbPayload_2.uiObjectSize)
 				THEN
@@ -140,10 +163,18 @@ IF	bStart5
 	END_CASE
 
 END_IF
-*)]]></ST>
+]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
       <LineId Id="83" Count="0" />
+      <LineId Id="252" Count="2" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="258" Count="1" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="263" Count="2" />
+      <LineId Id="270" Count="0" />
+      <LineId Id="266" Count="0" />
       <LineId Id="21" Count="1" />
       <LineId Id="56" Count="0" />
       <LineId Id="55" Count="0" />
@@ -182,6 +213,7 @@ END_IF
       <LineId Id="103" Count="2" />
       <LineId Id="113" Count="0" />
       <LineId Id="111" Count="0" />
+      <LineId Id="309" Count="2" />
       <LineId Id="177" Count="0" />
       <LineId Id="172" Count="3" />
       <LineId Id="160" Count="0" />
@@ -206,9 +238,12 @@ END_IF
       <LineId Id="155" Count="0" />
       <LineId Id="135" Count="5" />
       <LineId Id="156" Count="0" />
+      <LineId Id="314" Count="1" />
       <LineId Id="181" Count="0" />
       <LineId Id="176" Count="0" />
-      <LineId Id="141" Count="7" />
+      <LineId Id="141" Count="2" />
+      <LineId Id="262" Count="0" />
+      <LineId Id="145" Count="3" />
       <LineId Id="150" Count="1" />
       <LineId Id="154" Count="0" />
       <LineId Id="115" Count="0" />

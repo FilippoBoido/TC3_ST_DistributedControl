@@ -45,6 +45,9 @@
     <Compile Include="POUs\TcpIp.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DUTs" />

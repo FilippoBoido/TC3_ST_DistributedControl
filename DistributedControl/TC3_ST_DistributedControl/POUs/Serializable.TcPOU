@@ -22,9 +22,13 @@ END_VAR
 VAR_INPUT
 	 pSerialObject : POINTER TO BYTE;
 END_VAR
-]]></Declaration>
+VAR
+	pBuffer : POINTER TO BYTE;
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[MEMCPY(THIS,pSerialObject,uiObjectSize);
+        <ST><![CDATA[pBuffer := pSerializableObject;
+MEMCPY(THIS,pSerialObject,uiObjectSize);
+pSerializableObject := pBuffer;
 Deserialize := pSerialObject;]]></ST>
       </Implementation>
     </Method>
@@ -55,22 +59,19 @@ END_VAR
     </Method>
     <Method Name="Serialize" Id="{756b9a90-8f53-46bd-9d89-e8e40b346001}">
       <Declaration><![CDATA[METHOD Serialize : POINTER TO BYTE;
-VAR_INPUT
-END_VAR
+
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF pSerializableObject = 0
 THEN
 
-	Serialize := __NEW(BYTE,uiObjectSize);
-	nWrittenBytes := MEMCPY(Serialize,THIS,uiObjectSize);
-	pSerializableObject := Serialize;
-	
+	pSerializableObject := __NEW(BYTE,uiObjectSize);
+	nWrittenBytes := MEMCPY(pSerializableObject,THIS,uiObjectSize);
 ELSE
-	Serialize := pSerializableObject;
+	nWrittenBytes := MEMCPY(pSerializableObject,THIS,uiObjectSize);
 END_IF
 	
-
+Serialize := pSerializableObject;
 	
 ]]></ST>
       </Implementation>
@@ -79,7 +80,9 @@ END_IF
       <LineId Id="27" Count="0" />
     </LineIds>
     <LineIds Name="Serializable.Deserialize">
+      <LineId Id="14" Count="0" />
       <LineId Id="5" Count="0" />
+      <LineId Id="17" Count="0" />
       <LineId Id="8" Count="0" />
     </LineIds>
     <LineIds Name="Serializable.FB_exit">
@@ -94,9 +97,9 @@ END_IF
       <LineId Id="17" Count="2" />
       <LineId Id="12" Count="0" />
       <LineId Id="9" Count="0" />
-      <LineId Id="16" Count="0" />
-      <LineId Id="24" Count="0" />
-      <LineId Id="20" Count="3" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="22" Count="1" />
       <LineId Id="10" Count="1" />
       <LineId Id="5" Count="0" />
     </LineIds>

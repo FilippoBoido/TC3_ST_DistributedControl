@@ -4,18 +4,23 @@
     <Declaration><![CDATA[FUNCTION_BLOCK Payload EXTENDS Serializable
 VAR_INPUT
 	timer : TON;
+	k : INT;
+	j : INT;
 END_VAR
 VAR_OUTPUT
+	mySize : UINT;
 END_VAR
 VAR
-	k : INT;	
+		
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[timer();]]></ST>
+      <ST><![CDATA[timer();
+mySize := SIZEOF(THIS^);]]></ST>
     </Implementation>
     <LineIds Name="Payload">
       <LineId Id="20" Count="0" />
+      <LineId Id="33" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
