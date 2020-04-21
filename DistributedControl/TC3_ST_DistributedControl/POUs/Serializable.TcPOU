@@ -27,7 +27,12 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[pBuffer := pSerializableObject;
-MEMCPY(THIS,pSerialObject,uiObjectSize);
+
+IF 	pSerializableObject <> 0
+	THEN	
+	MEMCPY(THIS,pSerialObject,uiObjectSize);
+END_IF
+
 pSerializableObject := pBuffer;
 Deserialize := pSerialObject;]]></ST>
       </Implementation>
@@ -64,14 +69,14 @@ END_VAR
       <Implementation>
         <ST><![CDATA[IF pSerializableObject = 0
 THEN
-
 	pSerializableObject := __NEW(BYTE,uiObjectSize);
-	nWrittenBytes := MEMCPY(pSerializableObject,THIS,uiObjectSize);
-ELSE
-	nWrittenBytes := MEMCPY(pSerializableObject,THIS,uiObjectSize);
 END_IF
-	
-Serialize := pSerializableObject;
+
+IF pSerializableObject <> 0
+THEN
+	nWrittenBytes := MEMCPY(pSerializableObject,THIS,uiObjectSize);	
+	Serialize := pSerializableObject;
+END_IF
 	
 ]]></ST>
       </Implementation>
@@ -81,7 +86,10 @@ Serialize := pSerializableObject;
     </LineIds>
     <LineIds Name="Serializable.Deserialize">
       <LineId Id="14" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="18" Count="1" />
       <LineId Id="5" Count="0" />
+      <LineId Id="21" Count="1" />
       <LineId Id="17" Count="0" />
       <LineId Id="8" Count="0" />
     </LineIds>
@@ -94,13 +102,16 @@ Serialize := pSerializableObject;
       <LineId Id="7" Count="0" />
     </LineIds>
     <LineIds Name="Serializable.Serialize">
-      <LineId Id="17" Count="2" />
+      <LineId Id="17" Count="1" />
       <LineId Id="12" Count="0" />
-      <LineId Id="9" Count="0" />
-      <LineId Id="21" Count="0" />
-      <LineId Id="28" Count="0" />
-      <LineId Id="22" Count="1" />
-      <LineId Id="10" Count="1" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="11" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
   </POU>
